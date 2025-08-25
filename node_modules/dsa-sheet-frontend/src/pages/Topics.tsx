@@ -10,6 +10,7 @@ const Topics = () => {
   const [progress, setProgress] = useState<UserProgress[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState<string | null>(null);
+  console.log(progress)
 
   useEffect(() => {
     const fetchData = async () => {

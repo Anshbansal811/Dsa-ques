@@ -1,0 +1,5 @@
+# Handle client-side routing
+/*    /index.html   200
+
+# API proxy (if needed)
+/api/*  https://dsa-ques-1.onrender.com/api/:splat  200

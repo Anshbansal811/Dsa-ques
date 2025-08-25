@@ -1,0 +1,77 @@
+// This is your Prisma schema file for SQLite development,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Progress tracking
+  progress UserProgress[]
+
+  @@map("users")
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  order       Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Problems under this topic
+  problems Problem[]
+
+  @@map("topics")
+}
+
+model Problem {
+  id              String   @id @default(cuid())
+  title           String
+  description     String?
+  difficulty      String   // Changed from enum to String for SQLite compatibility
+  youtubeLink     String?
+  leetcodeLink    String?
+  codeforcesLink  String?
+  articleLink     String?
+  order           Int
+  topicId         String
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relationships
+  topic    Topic         @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  progress UserProgress[]
+
+  @@unique([title, topicId]) // Added this unique constraint for seeding
+  @@map("problems")
+}
+
+model UserProgress {
+  id        String   @id @default(cuid())
+  userId    String
+  problemId String
+  completed Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relationships
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+  @@map("user_progress")
+}

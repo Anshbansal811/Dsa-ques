@@ -62,7 +62,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       toast.success("Login successful!");
     } catch (error: any) {
-      const message = error.response?.data?.error || "Login failed";
+      let message = "Login failed";
+
+      if (error.response?.status === 401) {
+        message = "Invalid email or password";
+      } else if (error.response?.status === 404) {
+        message = "Service not available. Please try again later.";
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = error.message;
+      }
+
       toast.error(message);
       throw error;
     }
@@ -79,7 +90,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
       toast.success("Registration successful!");
     } catch (error: any) {
-      const message = error.response?.data?.error || "Registration failed";
+      let message = "Registration failed";
+
+      if (error.response?.status === 400) {
+        if (error.response?.data?.error === "User already exists") {
+          message = "An account with this email already exists";
+        } else if (error.response?.data?.errors) {
+          message = error.response.data.errors[0]?.msg || "Invalid input data";
+        } else {
+          message = error.response?.data?.error || "Invalid input data";
+        }
+      } else if (error.response?.status === 404) {
+        message = "Service not available. Please try again later.";
+      } else if (error.response?.data?.error) {
+        message = error.response.data.error;
+      } else if (error.message) {
+        message = error.message;
+      }
+
       toast.error(message);
       throw error;
     }

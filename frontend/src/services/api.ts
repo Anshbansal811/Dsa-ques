@@ -10,7 +10,8 @@ import {
   RegisterCredentials,
 } from "../types";
 
-const API_BASE_URL = "/api";
+//const API_BASE_URL = "/api";
+const API_BASE_URL = "https://dsa-ques-1.onrender.com/api";
 
 const api = axios.create({
   baseURL: API_BASE_URL,

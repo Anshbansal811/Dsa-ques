@@ -1,28 +1,85 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { BookOpen, ChevronRight, CheckCircle } from "lucide-react";
-import { topicsAPI } from "../services/api";
-import { Topic } from "../types";
+import { topicsAPI, progressAPI } from "../services/api";
+import { Topic, UserProgress } from "../types";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const Topics = () => {
   const [topics, setTopics] = useState<Topic[]>([]);
+  const [progress, setProgress] = useState<UserProgress[]>([]);
   const [loading, setLoading] = useState(true);
+  const [updating, setUpdating] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchTopics = async () => {
+    const fetchData = async () => {
       try {
-        const response = await topicsAPI.getAll();
-        setTopics(response.topics);
+        const [topicsRes, progressRes] = await Promise.all([
+          topicsAPI.getAll(),
+          progressAPI.getAll(),
+        ]);
+        setProgress(progressRes.progress);
+
+        // Merge progress into topics/problems
+        const topicsWithProgress = topicsRes.topics.map((topic) => ({
+          ...topic,
+          problems: topic.problems.map((problem) => {
+            const userProgress = progressRes.progress.find(
+              (p) => p.problemId === problem.id
+            );
+            return {
+              ...problem,
+              isCompleted: userProgress ? userProgress.isCompleted : false,
+            };
+          }),
+        }));
+        setTopics(topicsWithProgress);
       } catch (error) {
-        console.error("Failed to fetch topics:", error);
+        console.error("Failed to fetch topics or progress:", error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTopics();
+    fetchData();
   }, []);
+
+  // Handler to mark a problem as completed
+  const handleMarkCompleted = async (problemId: string, isCompleted: boolean) => {
+    setUpdating(problemId);
+    try {
+      if (isCompleted) {
+        // If already completed, toggle (unmark) it
+        await progressAPI.toggleProblem(problemId);
+      } else {
+        // If not completed, mark as completed
+        await progressAPI.markCompleted(problemId);
+      }
+      // Refresh progress and topics
+      const [topicsRes, progressRes] = await Promise.all([
+        topicsAPI.getAll(),
+        progressAPI.getAll(),
+      ]);
+      setProgress(progressRes.progress);
+      const topicsWithProgress = topicsRes.topics.map((topic) => ({
+        ...topic,
+        problems: topic.problems.map((problem) => {
+          const userProgress = progressRes.progress.find(
+            (p) => p.problemId === problem.id
+          );
+          return {
+            ...problem,
+            isCompleted: userProgress ? userProgress.isCompleted : false,
+          };
+        }),
+      }));
+      setTopics(topicsWithProgress);
+    } catch (error) {
+      console.error("Failed to update problem progress:", error);
+    } finally {
+      setUpdating(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -89,22 +146,10 @@ const Topics = () => {
                 <div className="mt-4">
                   <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
                     <span>Progress</span>
-                    <span>
-                      {completedProblems}/{totalProblems} completed
-                    </span>
-                  </div>
-                  <div className="w-full bg-gray-200 rounded-full h-2">
-                    <div
-                      className="bg-primary-600 h-2 rounded-full transition-all duration-300"
-                      style={{ width: `${progressPercentage}%` }}
-                    ></div>
                   </div>
                   <div className="flex items-center justify-between mt-3">
                     <span className="text-sm text-gray-500">
                       {totalProblems} problems total
-                    </span>
-                    <span className="text-sm font-medium text-primary-600">
-                      {progressPercentage}% complete
                     </span>
                   </div>
                 </div>
@@ -121,10 +166,15 @@ const Topics = () => {
                           className="flex items-center justify-between p-2 bg-gray-50 rounded"
                         >
                           <div className="flex items-center space-x-2">
-                            {problem.isCompleted ? (
+                            <input
+                              type="checkbox"
+                              checked={problem.isCompleted}
+                              disabled={problem.isCompleted || updating === problem.id}
+                              onChange={() => handleMarkCompleted(problem.id, problem.isCompleted ?? false)}
+                              className="form-checkbox h-4 w-4 text-green-600"
+                            />
+                            {problem.isCompleted && (
                               <CheckCircle className="h-4 w-4 text-green-600" />
-                            ) : (
-                              <div className="h-4 w-4 border-2 border-gray-300 rounded"></div>
                             )}
                             <span className="text-sm text-gray-700">
                               {problem.title}

@@ -33,6 +33,7 @@ export interface Problem {
 }
 
 export interface UserProgress {
+  isCompleted: any;
   id: string;
   userId: string;
   problemId: string;

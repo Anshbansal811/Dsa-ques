@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Menu, X, User, LogOut, Settings } from "lucide-react";
+import { Menu, LogOut } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { User as UserType } from "../types";
 

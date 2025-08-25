@@ -101,14 +101,7 @@ const Topics = () => {
 
       <div className="grid grid-cols-1 gap-6">
         {topics.map((topic) => {
-          const completedProblems = topic.problems.filter(
-            (p) => p.isCompleted
-          ).length;
           const totalProblems = topic.problems.length;
-          const progressPercentage =
-            totalProblems > 0
-              ? Math.round((completedProblems / totalProblems) * 100)
-              : 0;
 
           return (
             <div

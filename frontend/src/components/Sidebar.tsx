@@ -1,8 +1,7 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
-import { X } from "lucide-react";
 import { NavLink } from "react-router-dom";
-import { Home, BookOpen, Code, BarChart3, Menu } from "lucide-react";
+import { Home, BookOpen, Code, BarChart3} from "lucide-react";
 
 interface SidebarProps {
   open: boolean;

@@ -6,8 +6,6 @@ import {
   BarChart3,
   TrendingUp,
   CheckCircle,
-  Clock,
-  Target,
 } from "lucide-react";
 import { useAuth } from "../contexts/AuthContext";
 import { progressAPI, topicsAPI } from "../services/api";

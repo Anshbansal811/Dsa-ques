@@ -29,7 +29,7 @@ router.get("/", optionalAuth, async (req: Request, res: Response) => {
     });
 
     // Transform data to include progress information
-    const problemsWithProgress = problems.map((problem) => ({
+    const problemsWithProgress = problems.map((problem: any) => ({
       ...problem,
       isCompleted: userId
         ? problem.progress.length > 0 && problem.progress[0].completed

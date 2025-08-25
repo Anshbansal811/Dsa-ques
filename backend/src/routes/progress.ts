@@ -106,16 +106,26 @@ router.get(
         byDifficulty: {
           easy: {
             completed:
-              progressByDifficulty.find((p) => p.completed)?._count || 0,
-            total: progressByDifficulty.reduce((sum, p) => sum + p._count, 0),
+              progressByDifficulty.find((p: any) => p.completed)?._count || 0,
+            total: progressByDifficulty.reduce(
+              (sum: number, p: any) => sum + p._count,
+              0
+            ),
           },
           medium: {
-            completed: mediumProgress.find((p) => p.completed)?._count || 0,
-            total: mediumProgress.reduce((sum, p) => sum + p._count, 0),
+            completed:
+              mediumProgress.find((p: any) => p.completed)?._count || 0,
+            total: mediumProgress.reduce(
+              (sum: number, p: any) => sum + p._count,
+              0
+            ),
           },
           hard: {
-            completed: hardProgress.find((p) => p.completed)?._count || 0,
-            total: hardProgress.reduce((sum, p) => sum + p._count, 0),
+            completed: hardProgress.find((p: any) => p.completed)?._count || 0,
+            total: hardProgress.reduce(
+              (sum: number, p: any) => sum + p._count,
+              0
+            ),
           },
         },
       };

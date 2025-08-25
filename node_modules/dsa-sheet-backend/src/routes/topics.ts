@@ -27,9 +27,9 @@ router.get("/", optionalAuth, async (req: Request, res: Response) => {
     });
 
     // Transform data to include progress information
-    const topicsWithProgress = topics.map((topic) => ({
+    const topicsWithProgress = topics.map((topic: any) => ({
       ...topic,
-      problems: topic.problems.map((problem) => ({
+      problems: topic.problems.map((problem: any) => ({
         ...problem,
         isCompleted: userId
           ? problem.progress.length > 0 && problem.progress[0].completed
@@ -73,7 +73,7 @@ router.get("/:id", optionalAuth, async (req: Request, res: Response) => {
     // Transform data to include progress information
     const topicWithProgress = {
       ...topic,
-      problems: topic.problems.map((problem) => ({
+      problems: topic.problems.map((problem: any) => ({
         ...problem,
         isCompleted: userId
           ? problem.progress.length > 0 && problem.progress[0].completed
